@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/jonas-hagen/hx711.svg?branch=master)](https://travis-ci.org/jonas-hagen/hx711)
+
 # `HX711`
 
 > A platform agnostic driver to interface with the HX711 (load cell amplifier and 24 bit ADC)
