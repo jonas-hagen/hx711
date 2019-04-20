@@ -2,7 +2,10 @@
 name = "hx711"
 version = "0.1.0"
 authors = ["Jonas Hagen <jonas.hagen3@gmail.com>"]
-edition = "2018"
+categories = ["embedded", "hardware-support", "no-std"]
+keywords = ["embedded-hal-driver", "loadcell", "hx711", "amplifier", "adc"]
+repository = "https://github.com/jonas-hagen/hx711"
+license = "MIT OR Apache-2.0"
 
 [dependencies]
 nb = "0.1.1"
