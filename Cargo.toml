@@ -12,5 +12,5 @@ license = "MIT OR Apache-2.0"
 nb = "0.1.1"
 
 [dependencies.embedded-hal]
-version = "0.2.2"
+version = "0.2.3"
 features = ["unproven"]

@@ -14,8 +14,8 @@ extern crate embedded_hal as hal;
 #[macro_use(block)]
 extern crate nb;
 
-use hal::digital::InputPin;
-use hal::digital::OutputPin;
+use hal::digital::v2::InputPin;
+use hal::digital::v2::OutputPin;
 
 /// Maximum ADC value
 pub const MAX_VALUE: i32 = (1 << 23) - 1;
@@ -30,14 +30,15 @@ pub struct Hx711<IN, OUT> {
     mode: Mode,
 }
 
-impl<IN, OUT> Hx711<IN, OUT>
+impl<IN, OUT, E> Hx711<IN, OUT>
 where
-    IN: InputPin,
-    OUT: OutputPin,
+    IN: InputPin<Error = E>,
+    OUT: OutputPin<Error = E>,
+    E: core::fmt::Debug,
 {
     /// Creates a new driver from Input and Outut pins
     pub fn new(dout: IN, mut pd_sck: OUT) -> Self {
-        pd_sck.set_low();
+        pd_sck.set_low().unwrap();
         let mut hx711 = Hx711 {
             dout,
             pd_sck,
@@ -55,17 +56,17 @@ where
 
     /// Reset the chip. Mode is Channel A Gain 128 after reset.
     pub fn reset(&mut self) {
-        self.pd_sck.set_high();
+        self.pd_sck.set_high().unwrap();
         for _ in 1..3 {
-            self.dout.is_high();
+            self.dout.is_high().unwrap();
         }
-        self.pd_sck.set_low();
+        self.pd_sck.set_low().unwrap();
     }
 
     /// Retrieve the latest conversion value if available
     pub fn retrieve(&mut self) -> nb::Result<i32, !> {
-        self.pd_sck.set_low();
-        if self.dout.is_high() {
+        self.pd_sck.set_low().unwrap();
+        if self.dout.is_high().unwrap() {
             // Conversion not ready yet
             return Err(nb::Error::WouldBlock);
         }
@@ -74,9 +75,10 @@ where
         for _ in 0..24 {
             // Read 24 bits
             count <<= 1;
-            self.pd_sck.set_high();
-            self.pd_sck.set_low();
-            if self.dout.is_high() {
+            self.pd_sck.set_high().unwrap();
+            self.pd_sck.set_low().unwrap();
+
+            if self.dout.is_high().unwrap() {
                 count += 1;
             }
         }
@@ -84,8 +86,8 @@ where
         // Continue to set mode for next conversion
         let n_reads = self.mode as u16;
         for _ in 0..n_reads {
-            self.pd_sck.set_high();
-            self.pd_sck.set_low();
+            self.pd_sck.set_high().unwrap();
+            self.pd_sck.set_low().unwrap();
         }
 
         Ok(i24_to_i32(count))
