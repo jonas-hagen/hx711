@@ -5,7 +5,6 @@
 //! [`embedded-hal`]: https://docs.rs/embedded-hal/0.2
 
 #![deny(missing_docs)]
-#![deny(warnings)]
 #![no_std]
 #![feature(never_type)]
 
@@ -21,7 +20,7 @@ use hal::digital::v2::OutputPin;
 pub const MAX_VALUE: i32 = (1 << 23) - 1;
 
 /// Minimum ADC value
-pub const MIN_VALUE: i32 = (1 << 23);
+pub const MIN_VALUE: i32 = 1 << 23;
 
 /// HX711 driver
 pub struct Hx711<IN, OUT> {
