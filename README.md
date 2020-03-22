@@ -10,14 +10,23 @@
 - Setting the mode (gain and channel)
 - Reading conversion results (blocking and non blocking)
 
-## TODO
+Tested with STM32F103. Pull requests for other hardware welcome!
 
-- [ ] Test on bare metal
-- [ ] Power down
+Because the interface works by toggling of GPIO pins, timing is important. Example for linux (Raspberry Pi) does not work reliably due to timing issues, but it should work good enough for quick and easy testing.
 
 ## Examples
 
 See here: https://github.com/jonas-hagen/hx711-examples
+
+## Changelog
+
+### v0.2
+
+- Update to `embedded-hal` digital pin v2 API. Thanks to *mmou*!
+
+### v0.1
+
+- First version.
 
 ## License
 
