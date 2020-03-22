@@ -1,6 +1,6 @@
 [package]
 name = "hx711"
-version = "0.1.0"
+version = "0.2.0"
 description = "A platform agnostic driver to interface with the HX711 (load cell amplifier and ADC)"
 authors = ["Jonas Hagen <jonas.hagen3@gmail.com>"]
 categories = ["embedded", "hardware-support", "no-std"]
