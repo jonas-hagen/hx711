@@ -10,11 +10,12 @@
 
 extern crate embedded_hal as hal;
 
-#[macro_use(block)]
 extern crate nb;
 
 use hal::digital::v2::InputPin;
 use hal::digital::v2::OutputPin;
+
+use core::convert::Infallible;
 
 /// Maximum ADC value
 pub const MAX_VALUE: i32 = (1 << 23) - 1;
@@ -29,43 +30,71 @@ pub struct Hx711<IN, OUT> {
     mode: Mode,
 }
 
-impl<IN, OUT, E> Hx711<IN, OUT>
+/// Error type for Input and Output errors on digital pins.
+/// For some HALs, the digital input and output pins can never fail.
+/// If you use the driver with such a crate, you can use `.into_ok()` on all results
+/// instead of `.unwrap()` or `.expect()`.
+#[derive(Debug)]
+pub enum Error<EIN, EOUT> {
+    /// Error while reading a digital pin
+    Input(EIN),
+    /// Error while writing a digital pin
+    Output(EOUT),
+}
+
+/// For some hardware crates, the digital input and output pins can never fail.
+/// This implementation enables the use of `.into_ok()`.
+impl Into<!> for Error<!, !> {
+    fn into(self) -> ! {
+        panic!()
+    }
+}
+
+/// For some hardware crates, the digital input and output pins can never fail.
+/// This implementation enables the use of `.into_ok()`.
+impl Into<!> for Error<Infallible, Infallible> {
+    fn into(self) -> ! {
+        panic!()
+    }
+}
+
+impl<IN, OUT, EIN, EOUT> Hx711<IN, OUT>
 where
-    IN: InputPin<Error = E>,
-    OUT: OutputPin<Error = E>,
-    E: core::fmt::Debug,
+    IN: InputPin<Error = EIN>,
+    OUT: OutputPin<Error = EOUT>,
 {
     /// Creates a new driver from Input and Outut pins
-    pub fn new(dout: IN, mut pd_sck: OUT) -> Self {
-        pd_sck.set_low().unwrap();
+    pub fn new(dout: IN, mut pd_sck: OUT) -> Result<Self, Error<EIN, EOUT>> {
+        pd_sck.set_low().map_err(Error::Output)?;
         let mut hx711 = Hx711 {
             dout,
             pd_sck,
             mode: Mode::ChAGain128,
         };
-        hx711.reset();
-        hx711
+        hx711.reset()?;
+        Ok(hx711)
     }
 
     /// Set the mode (channel and gain).
-    pub fn set_mode(&mut self, mode: Mode) {
+    pub fn set_mode(&mut self, mode: Mode) -> nb::Result<(), Error<EIN, EOUT>> {
         self.mode = mode;
-        block!(self.retrieve()).unwrap();
+        self.retrieve().and(Ok(()))
     }
 
     /// Reset the chip. Mode is Channel A Gain 128 after reset.
-    pub fn reset(&mut self) {
-        self.pd_sck.set_high().unwrap();
+    pub fn reset(&mut self) -> Result<(), Error<EIN, EOUT>> {
+        self.pd_sck.set_high().map_err(Error::Output)?;
         for _ in 1..3 {
-            self.dout.is_high().unwrap();
+            self.dout.is_high().map_err(Error::Input)?;
         }
-        self.pd_sck.set_low().unwrap();
+        self.pd_sck.set_low().map_err(Error::Output)?;
+        Ok(())
     }
 
     /// Retrieve the latest conversion value if available
-    pub fn retrieve(&mut self) -> nb::Result<i32, !> {
-        self.pd_sck.set_low().unwrap();
-        if self.dout.is_high().unwrap() {
+    pub fn retrieve(&mut self) -> nb::Result<i32, Error<EIN, EOUT>> {
+        self.pd_sck.set_low().map_err(Error::Output)?;
+        if self.dout.is_high().map_err(Error::Input)? {
             // Conversion not ready yet
             return Err(nb::Error::WouldBlock);
         }
@@ -74,10 +103,10 @@ where
         for _ in 0..24 {
             // Read 24 bits
             count <<= 1;
-            self.pd_sck.set_high().unwrap();
-            self.pd_sck.set_low().unwrap();
+            self.pd_sck.set_high().map_err(Error::Output)?;
+            self.pd_sck.set_low().map_err(Error::Output)?;
 
-            if self.dout.is_high().unwrap() {
+            if self.dout.is_high().map_err(Error::Input)? {
                 count += 1;
             }
         }
@@ -85,8 +114,8 @@ where
         // Continue to set mode for next conversion
         let n_reads = self.mode as u16;
         for _ in 0..n_reads {
-            self.pd_sck.set_high().unwrap();
-            self.pd_sck.set_low().unwrap();
+            self.pd_sck.set_high().map_err(Error::Output)?;
+            self.pd_sck.set_low().map_err(Error::Output)?;
         }
 
         Ok(i24_to_i32(count))
