@@ -20,6 +20,10 @@ See here: https://github.com/jonas-hagen/hx711-examples
 
 ## Changelog
 
+### v0.3
+
+- Add custom error type. Some HALs implement the digital interface in a way that it cannot fail. In this case, the Error type of Input and Output pins are Infallible. With a custom Error type we can allow the use of `.into_ok()` when using such HAL implementations.
+
 ### v0.2
 
 - Update to `embedded-hal` digital pin v2 API. Thanks to *mmou*!
