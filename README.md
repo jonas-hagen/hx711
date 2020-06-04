@@ -10,6 +10,7 @@
 - Resetting the chip
 - Setting the mode (gain and channel)
 - Reading conversion results (blocking and non blocking)
+- Entering low-power mode and wake up
 
 Tested with STM32F103. Pull requests for other hardware welcome!
 
@@ -80,6 +81,7 @@ Some random notes on this topic:
 ### v0.4 (not yet released)
 
 - Add delays.
+- Add `enable()` and `disable()` functions to enter and leave low-power mode.
 
 ### v0.3
 

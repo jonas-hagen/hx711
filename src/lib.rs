@@ -97,14 +97,24 @@ where
         self.mode = mode;
         self.retrieve().and(Ok(()))
     }
-
-    /// Reset the chip. Mode is Channel A Gain 128 after reset.
-    pub fn reset(&mut self) -> Result<(), Error<EIN, EOUT>> {
+    /// Put the chip in power down state.
+    pub fn disable(&mut self) -> Result<(), Error<EIN, EOUT>> {
         self.pd_sck.set_high().map_err(Error::Output)?;
-        self.delay.delay_us(TIME_SCK_HIGH);
+        self.delay.delay_us(TIME_TO_SLEEP);
+        Ok(())
+    }
+
+    /// Wake the chip up and set mode.
+    pub fn enable(&mut self) -> Result<(), Error<EIN, EOUT>> {
         self.pd_sck.set_low().map_err(Error::Output)?;
         self.delay.delay_us(TIME_SCK_LOW);
-        Ok(())
+        nb::block!{self.set_mode(self.mode)}
+    }
+
+    /// Reset the chip.
+    pub fn reset(&mut self) -> Result<(), Error<EIN, EOUT>> {
+        self.disable()?;
+        self.enable()
     }
 
     /// Retrieve the latest conversion value if available
