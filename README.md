@@ -13,13 +13,73 @@
 
 Tested with STM32F103. Pull requests for other hardware welcome!
 
-Because the interface works by toggling of GPIO pins, timing is important. Example for linux (Raspberry Pi) does not work reliably due to timing issues, but it should work good enough for quick and easy testing.
+Because the interface works by toggling of GPIO pins, some care has to be taken. See below.
 
 ## Examples
 
 See here: https://github.com/jonas-hagen/hx711-examples
 
+## Bit-banging and delays
+
+The protocol is implemented using GPIO interface because the HX711 needs a specific number of clock cycles to set the operation mode (25, 26 or 27 cycles). 
+So, **beware of interrupts** during readout!
+The delays between state changes for clocking only need to be 0.1 µs (per HX711 specs), allowing to clock through all 24 cycles in approximately 5 µs.
+But the current embedded HAL does not support delays smaller than 1 µs (see [embedded-hal #63](https://github.com/rust-embedded/embedded-hal/issues/63) for the discussion).
+With a delay of 1 µs, the readout takes at least 48 µs.
+Depending on clock speed of the device, this increases to 300 µs (STM32F103 at 8 MHz) or more.
+This is much larger than the conversion time of the HX711 ADC (100 µs).
+
+To tweak the performance, an alternative implementation of the delay trait can be used. For example:
+
+```rust
+use embedded_hal::blocking::delay::DelayUs;
+
+pub struct BusyDelay {
+    nops_per_us: u32,
+}
+
+impl BusyDelay {
+    pub fn new(loops_per_us: u32) -> Self {
+        BusyDelay{loops_per_us: loops_per_us as u32}
+    }
+}
+
+impl DelayUs<u32> for BusyDelay {
+    fn delay_us(&mut self, us: u32) {
+        for _ in 0..us {
+            cortex_m::asm::delay(self.nops_per_us)
+        }
+    }
+}
+```
+
+Or even:
+
+```rust
+pub struct NoDelay();
+
+impl NoDelay {
+    pub fn new() -> Self {
+        NoDelay()
+    }
+}
+
+impl DelayUs<u32> for NoDelay {
+    fn delay_us(&mut self, _us: u32) {
+    }
+}
+```
+
+Some random notes on this topic:
+* Maybe add a `nodelay` feature?
+* It would be interesting to try to use SPI with MOSI as clock and MISO as data line, not using the actual SPI clock.
+* How to make this work on linux? Any ideas?
+
 ## Changelog
+
+### v0.4 (not yet released)
+
+- Add delays.
 
 ### v0.3
 
