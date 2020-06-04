@@ -78,7 +78,7 @@ Some random notes on this topic:
 
 ## Changelog
 
-### v0.4 (not yet released)
+### v0.4
 
 - Add delays.
 - Add `enable()` and `disable()` functions to enter and leave low-power mode.
