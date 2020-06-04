@@ -152,5 +152,8 @@ mod tests {
         assert_eq!(i24_to_i32(0x000002), 2);
         assert_eq!(i24_to_i32(0xFFFFFF), -1);
         assert_eq!(i24_to_i32(0xFFFFF3), -13);
+        assert_eq!(i24_to_i32(0xF00000), -1048576);
+        assert_eq!(i24_to_i32(0x800000), -8388608);
+        assert_eq!(i24_to_i32(0x7FFFFF), 8388607);
     }
 }
