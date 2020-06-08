@@ -22,13 +22,13 @@ See here: https://github.com/jonas-hagen/hx711-examples
 
 ## Bit-banging and delays
 
-The protocol is implemented using GPIO interface because the HX711 needs a specific number of clock cycles to set the operation mode (25, 26 or 27 cycles). 
+The protocol is implemented using the GPIO interface because the HX711 needs a specific number of clock cycles to set the operation mode (25, 26 or 27 cycles). 
 So, **beware of interrupts** during readout!
 The delays between state changes for clocking only need to be 0.1 µs (per HX711 specs), allowing to clock through all 24 cycles in approximately 5 µs.
 But the current embedded HAL does not support delays smaller than 1 µs (see [embedded-hal #63](https://github.com/rust-embedded/embedded-hal/issues/63) for the discussion).
 With a delay of 1 µs, the readout takes at least 48 µs.
-Depending on clock speed of the device, this increases to 300 µs (STM32F103 at 8 MHz) or more.
-This is much larger than the conversion time of the HX711 ADC (100 µs).
+Depending on clock speed of the device, this increases to 300 µs in total (tested with STM32F103 at 8 MHz) or more.
+In a control loop, this might be undesirable and keeping the time closer to the 5 µs is compelling.
 
 To tweak the performance, an alternative implementation of the delay trait can be used. For example:
 
