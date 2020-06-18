@@ -20,6 +20,25 @@ Because the interface works by toggling of GPIO pins, some care has to be taken.
 
 See here: https://github.com/jonas-hagen/hx711-examples
 
+Incomplete appetizer:
+```rust
+let mut val: i32 = 0;
+
+let dout = gpioa.pa6.into_floating_input(&mut gpioa.crl);
+let pd_sck = gpioa.pa7.into_push_pull_output(&mut gpioa.crl);
+
+let mut hx711 = Hx711::new(Delay::new(cp.SYST, clocks), dout, pd_sck).into_ok();
+
+// Obtain the tara value
+writeln!(tx, "Obtaining tara ...").unwrap();
+const N: i32 = 8;
+for _ in 0..N {
+    val += block!(hx711.retrieve()).into_ok(); // or unwrap, see features below
+}
+let tara = val / N;
+writeln!(tx, "Tara:   {}", tara).unwrap();
+```
+
 ## Optional features
 
 ### `never_type`
