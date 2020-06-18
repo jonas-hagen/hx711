@@ -8,6 +8,9 @@ keywords = ["embedded-hal-driver", "loadcell", "hx711", "amplifier", "adc"]
 repository = "https://github.com/jonas-hagen/hx711"
 license = "MIT OR Apache-2.0"
 
+[features]
+never_type = []
+
 [dependencies]
 nb = "0.1.2"
 

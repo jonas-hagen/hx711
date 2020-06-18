@@ -6,7 +6,8 @@
 
 #![deny(missing_docs)]
 #![no_std]
-#![feature(never_type)]
+#![cfg_attr(feature = "never_type", feature(never_type))]
+#![cfg_attr(all(feature = "never_type", test), feature(unwrap_infallible))]
 
 extern crate embedded_hal as hal;
 
@@ -16,6 +17,7 @@ use hal::blocking::delay::DelayUs;
 use hal::digital::v2::InputPin;
 use hal::digital::v2::OutputPin;
 
+#[cfg(feature = "never_type")]
 use core::convert::Infallible;
 
 /// Maximum ADC value
@@ -59,6 +61,7 @@ pub enum Error<EIN, EOUT> {
 
 /// For some hardware crates, the digital input and output pins can never fail.
 /// This implementation enables the use of `.into_ok()`.
+#[cfg(feature = "never_type")]
 impl Into<!> for Error<!, !> {
     fn into(self) -> ! {
         panic!()
@@ -67,6 +70,7 @@ impl Into<!> for Error<!, !> {
 
 /// For some hardware crates, the digital input and output pins can never fail.
 /// This implementation enables the use of `.into_ok()`.
+#[cfg(feature = "never_type")]
 impl Into<!> for Error<Infallible, Infallible> {
     fn into(self) -> ! {
         panic!()
@@ -177,6 +181,9 @@ fn i24_to_i32(x: i32) -> i32 {
 mod tests {
     use crate::*;
 
+    #[cfg(feature = "never_type")]
+    use core::convert::Infallible;
+
     #[test]
     fn convert() {
         assert_eq!(i24_to_i32(0x000001), 1);
@@ -186,5 +193,19 @@ mod tests {
         assert_eq!(i24_to_i32(0xF00000), -1048576);
         assert_eq!(i24_to_i32(0x800000), -8388608);
         assert_eq!(i24_to_i32(0x7FFFFF), 8388607);
+    }
+
+    #[test]
+    #[cfg(feature = "never_type")]
+    fn infallible_into_ok() {
+        let this_is_ok: Result<usize, Error<Infallible, Infallible>> = Ok(77);
+        assert_eq!(this_is_ok.into_ok(), 77);
+    }
+
+    #[test]
+    #[cfg(feature = "never_type")]
+    fn never_fail_into_ok() {
+        let this_is_ok: Result<usize, Error<!, !>> = Ok(77);
+        assert_eq!(this_is_ok.into_ok(), 77);
     }
 }
