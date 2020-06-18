@@ -117,7 +117,7 @@ Some random notes on this topic:
 
 ## Changelog
 
-### v0.5 (next release)
+### v0.5
 
 - Hide usage of `never_type` behind feature for usage on stable rust
 
