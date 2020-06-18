@@ -20,6 +20,26 @@ Because the interface works by toggling of GPIO pins, some care has to be taken.
 
 See here: https://github.com/jonas-hagen/hx711-examples
 
+## Optional features
+
+### `never_type`
+
+The `never_type` feature can optionally be enabled when using nightly rust.
+
+For some HALs, the digital input and output pins can never fail.
+When using the driver with such a crate, one can use `.into_ok()` on all results instead of `.unwrap()` or `.expect()`.
+
+Example with e.g. STM32f1xx embedded hal:
+```rust
+// Without never_type (stable rust):
+// We know that this never fails
+let weight = block!(hx711.retrieve()).unwrap())
+
+// With never_type (nightly rust)
+// It is obvious that this is always ok
+let weight = block!(hx711.retrieve()).into_ok()
+```
+
 ## Bit-banging and delays
 
 The protocol is implemented using the GPIO interface because the HX711 needs a specific number of clock cycles to set the operation mode (25, 26 or 27 cycles). 
@@ -77,6 +97,10 @@ Some random notes on this topic:
 * How to make this work on linux? Any ideas?
 
 ## Changelog
+
+### v0.5 (next release)
+
+- Hide usage of `never_type` behind feature for usage on stable rust
 
 ### v0.4
 
