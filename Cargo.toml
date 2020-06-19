@@ -15,5 +15,5 @@ never_type = []
 nb = "0.1.2"
 
 [dependencies.embedded-hal]
-version = "0.2.3"
+version = "0.2.4"
 features = ["unproven"]
