@@ -112,7 +112,7 @@ where
     pub fn enable(&mut self) -> Result<(), Error<EIN, EOUT>> {
         self.pd_sck.set_low().map_err(Error::Output)?;
         self.delay.delay_us(TIME_SCK_LOW);
-        nb::block!{self.set_mode(self.mode)}
+        nb::block! {self.set_mode(self.mode)}
     }
 
     /// Reset the chip.
