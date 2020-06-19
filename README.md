@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/jonas-hagen/hx711.svg?branch=master)](https://travis-ci.org/jonas-hagen/hx711)
 [![crates.io](https://img.shields.io/crates/v/hx711.svg)](https://crates.io/crates/hx711)
+[![docs.rs](https://docs.rs/hx711/badge.svg)](https://docs.rs/hx711)
 
 # `HX711`
 
