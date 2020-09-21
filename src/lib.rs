@@ -96,6 +96,11 @@ where
         Ok(hx711)
     }
 
+    /// Get the mode (channel and gain).
+    pub fn get_mode(&self) -> Mode {
+        self.mode
+    }
+
     /// Set the mode (channel and gain).
     pub fn set_mode(&mut self, mode: Mode) -> nb::Result<(), Error<EIN, EOUT>> {
         self.mode = mode;
