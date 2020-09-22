@@ -118,6 +118,11 @@ Some random notes on this topic:
 
 ## Changelog
 
+### v0.6
+
+- Update nb requirement to 1.0.0
+- Add `get_mode` function. Thanks *m-ou-se*!
+
 ### v0.5
 
 - Hide usage of `never_type` behind feature for usage on stable rust
