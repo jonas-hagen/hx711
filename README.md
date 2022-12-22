@@ -118,6 +118,10 @@ Some random notes on this topic:
 
 ## Changelog
 
+### v0.7
+
+- Fix naming of mode Enum. This is a breaking change if the mode `ChBGain64` is used (which does not exist in hardware). Thanks *joelsa*!
+
 ### v0.6
 
 - Update nb requirement to 1.0.0
