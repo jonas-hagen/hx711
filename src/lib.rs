@@ -2,7 +2,8 @@
 //!
 //! This driver was built using [`embedded-hal`] traits.
 //!
-//! [`embedded-hal`]: https://docs.rs/embedded-hal/0.2
+//! [`embedded-hal`]: https://docs.rs/embedded-hal/1.0.0
+//! Patched by Jesse Bud @ Scylla Digital PTY LTD (Australia)
 
 #![deny(missing_docs)]
 #![no_std]
@@ -13,12 +14,12 @@ extern crate embedded_hal as hal;
 
 extern crate nb;
 
-use hal::blocking::delay::DelayUs;
-use hal::digital::v2::InputPin;
-use hal::digital::v2::OutputPin;
+
 
 #[cfg(feature = "never_type")]
 use core::convert::Infallible;
+use hal::delay::DelayNs;
+use hal::digital::{InputPin, OutputPin};
 
 /// Maximum ADC value
 pub const MAX_VALUE: i32 = (1 << 23) - 1;
@@ -79,7 +80,7 @@ impl Into<!> for Error<Infallible, Infallible> {
 
 impl<D, IN, OUT, EIN, EOUT> Hx711<D, IN, OUT>
 where
-    D: DelayUs<u32>,
+    D: DelayNs,
     IN: InputPin<Error = EIN>,
     OUT: OutputPin<Error = EOUT>,
 {
