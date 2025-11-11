@@ -163,15 +163,15 @@ where
     }
 }
 
-/// The HX711 can run in three modes:
+/// The HX711 can run in three modes (see Table 3 in Datasheet):
 #[derive(Copy, Clone)]
 pub enum Mode {
     /// Chanel A with factor 128 gain
     ChAGain128 = 1,
-    /// Chanel B with factor 64 gain
-    ChBGain32 = 2,
     /// Chanel B with factor 32 gain
-    ChBGain64 = 3,
+    ChBGain32 = 2,
+    /// Chanel A with factor 64 gain
+    ChAGain64 = 3,
 }
 
 /// Convert 24 bit signed integer to i32
