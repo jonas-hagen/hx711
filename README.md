@@ -62,7 +62,7 @@ let weight = block!(hx711.retrieve()).into_ok()
 
 ## Bit-banging and delays
 
-The protocol is implemented using the GPIO interface because the HX711 needs a specific number of clock cycles to set the operation mode (25, 26 or 27 cycles). 
+The protocol is implemented using the GPIO interface because the HX711 needs a specific number of clock cycles to set the operation mode (25, 26 or 27 cycles).
 So, **beware of interrupts** during readout!
 The delays between state changes for clocking only need to be 0.1 µs (per HX711 specs), allowing to clock through all 24 cycles in approximately 5 µs.
 But the current embedded HAL does not support delays smaller than 1 µs (see [embedded-hal #63](https://github.com/rust-embedded/embedded-hal/issues/63) for the discussion).
@@ -121,6 +121,7 @@ Some random notes on this topic:
 ### v0.7
 
 - Fix naming of mode Enum. This is a breaking change if the mode `ChBGain64` is used (which does not exist in hardware). Thanks *joelsa*!
+- Update to `embedded-hal` v1.0. Thanks *Jesse Bud*!
 
 ### v0.6
 
