@@ -13,7 +13,7 @@
 - Reading conversion results (blocking and non blocking)
 - Entering low-power mode and wake up
 
-Tested with STM32F103. Pull requests for other hardware welcome!
+Tested with STM32F103 and ESP32. Pull requests for other hardware welcome!
 
 Because the interface works by toggling of GPIO pins, some care has to be taken. See below.
 
